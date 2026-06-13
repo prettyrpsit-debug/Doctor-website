@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment Dashboard</title>
+
+    <style>
+
+        body{
+            font-family:Arial;
+            background:#f4f4f4;
+            padding:30px;
+        }
+
+        h1{
+            text-align:center;
+            color:#7e22ce;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:white;
+        }
+
+        th{
+            background:#7e22ce;
+            color:white;
+            padding:12px;
+        }
+
+        td{
+            padding:12px;
+            border:1px solid #ddd;
+            text-align:center;
+        }
+
+        tr:nth-child(even){
+            background:#f9f9f9;
+        }
+
+        tr:hover{
+            background:#eee;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<h1>Hospital Appointment Dashboard</h1>
+
+<table>
+
+    <tr>
+        <th>ID</th>
+        <th>Patient Name</th>
+        <th>Phone</th>
+        <th>Appointment Date</th>
+        <th>Doctor</th>
+        <th>Symptoms</th>
+    </tr>
+
+    {% for row in appointments %}
+
+    <tr>
+        <td>{{ row.id }}</td>
+        <td>{{ row.patient_name }}</td>
+        <td>{{ row.phone }}</td>
+        <td>{{ row.appointment_date }}</td>
+        <td>{{ row.doctor }}</td>
+        <td>{{ row.symptoms }}</td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+</body>
+</html>
