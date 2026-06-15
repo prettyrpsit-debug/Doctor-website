@@ -1,5 +1,5 @@
 from flask import Flask, render_template_string
-import sqlite3
+from db import get_db_connection
 
 app = Flask(__name__)
 
@@ -84,12 +84,13 @@ HTML = """
 @app.route("/")
 def dashboard():
 
-    conn = sqlite3.connect("hospital.db")
+    conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM appointments")
+    cursor.execute("SELECT * FROM appointments ORDER BY id ASC")
     data = cursor.fetchall()
 
+    cursor.close()
     conn.close()
 
     return render_template_string(HTML, data=data)

@@ -1,27 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
+from db import get_db_connection, init_db, fetch_all_as_dict
 
 app = Flask(__name__)
 
-# Create Database Table
-def init_db():
-    conn = sqlite3.connect("hospital.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS appointments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient_name TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        appointment_date TEXT NOT NULL,
-        doctor TEXT NOT NULL,
-        symptoms TEXT
-    )
-    """)
-
-    conn.commit()
-    conn.close()
-
+# Initialize PostgreSQL Database Table
 init_db()
 
 
@@ -39,17 +21,18 @@ def appointment():
     doctor = request.form["doctor"]
     symptoms = request.form["symptoms"]
 
-    conn = sqlite3.connect("hospital.db")
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
     INSERT INTO appointments
     (patient_name, phone, appointment_date, doctor, symptoms)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES (%s, %s, %s, %s, %s)
     """,
     (patient_name, phone, appointment_date, doctor, symptoms))
 
     conn.commit()
+    cursor.close()
     conn.close()
 
     return """
@@ -63,15 +46,16 @@ def appointment():
 @app.route("/appointments")
 def appointments():
 
-    conn = sqlite3.connect("hospital.db")
+    conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM appointments")
-    data = cursor.fetchall()
+    cursor.execute("SELECT * FROM appointments ORDER BY id ASC")
+    data = fetch_all_as_dict(cursor)
 
+    cursor.close()
     conn.close()
 
-    return str(data)
+    return render_template("dashboard.html", appointments=data)
 
 
 if __name__ == "__main__":
